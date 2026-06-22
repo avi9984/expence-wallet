@@ -60,6 +60,7 @@ function App() {
   const [simRunning, setSimRunning] = useState(false);
   const [simLogs, setSimLogs] = useState([]);
   const [simProgress, setSimProgress] = useState(0);
+  const [autoReset, setAutoReset] = useState(true);
 
   // Show toast notification
   const showNotification = useCallback((type, message) => {
@@ -316,14 +317,18 @@ function App() {
     try {
       if (simulationType === 'valid') {
         // High Volume Valid Case
-        // 1. Reset balance to 50,000 INR
-        setSimLogs(prev => [...prev, { type: 'info', text: 'Resetting wallet to 50,000 INR...' }]);
-        await fetch(`/api/wallets/${walletId}/reset`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ balance: 50000 })
-        });
-        await fetchWalletAndTransactions(walletId);
+        if (autoReset) {
+          // 1. Reset balance to 50,000 INR
+          setSimLogs(prev => [...prev, { type: 'info', text: 'Resetting wallet to 50,000 INR...' }]);
+          await fetch(`/api/wallets/${walletId}/reset`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ balance: 50000 })
+          });
+          await fetchWalletAndTransactions(walletId);
+        } else {
+          setSimLogs(prev => [...prev, { type: 'info', text: 'Skipping wallet reset. Using current balance...' }]);
+        }
 
         setSimLogs(prev => [...prev, { type: 'info', text: 'Spawning 10 concurrent requests of 500 INR each...' }]);
 
@@ -357,14 +362,18 @@ function App() {
 
       } else {
         // Insufficient Funds Edge Case
-        // 1. Reset balance to 2,000 INR
-        setSimLogs(prev => [...prev, { type: 'info', text: 'Resetting wallet to 2,000 INR...' }]);
-        await fetch(`/api/wallets/${walletId}/reset`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ balance: 2000 })
-        });
-        await fetchWalletAndTransactions(walletId);
+        if (autoReset) {
+          // 1. Reset balance to 2,000 INR
+          setSimLogs(prev => [...prev, { type: 'info', text: 'Resetting wallet to 2,000 INR...' }]);
+          await fetch(`/api/wallets/${walletId}/reset`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ balance: 2000 })
+          });
+          await fetchWalletAndTransactions(walletId);
+        } else {
+          setSimLogs(prev => [...prev, { type: 'info', text: 'Skipping wallet reset. Using current balance...' }]);
+        }
 
         setSimLogs(prev => [...prev, { type: 'info', text: 'Spawning 2 concurrent requests of 1,500 INR each...' }]);
 
@@ -649,7 +658,18 @@ function App() {
                     </button>
                   </div>
 
-                  <div style={{ marginTop: '16px' }}>
+                  <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-main)' }}>
+                      <input
+                        type="checkbox"
+                        checked={autoReset}
+                        onChange={(e) => setAutoReset(e.target.checked)}
+                        disabled={simRunning}
+                        style={{ width: '16px', height: '16px', accentColor: 'var(--primary)', cursor: 'pointer' }}
+                      />
+                      Auto-Reset Wallet balance before running test
+                    </label>
+
                     <button
                       className="btn"
                       style={{ background: 'var(--accent-gradient)' }}
