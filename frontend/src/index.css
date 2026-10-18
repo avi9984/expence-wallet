@@ -137,7 +137,8 @@ h6 {
   font-size: 32px;
   font-weight: 700;
   background: var(--accent-gradient);
-  /* -webkit-background-clip: text; */
+  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 8px;
   font-family: var(--font-heading);
@@ -315,7 +316,8 @@ h6 {
   font-size: 24px;
   font-weight: 700;
   background: var(--accent-gradient);
-  /* -webkit-background-clip: text; */
+  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
