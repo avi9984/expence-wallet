@@ -32,7 +32,7 @@ CREATE TABLE Transactions(
 );
 
 
---CREATE DATABASE expense_wallet;
+CREATE DATABASE expense_wallet;
 
 
 SELECT * FROM departments;
